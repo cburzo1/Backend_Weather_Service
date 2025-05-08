@@ -12,6 +12,8 @@ public interface WeatherService {
 
     Weather getWeather(Integer id);
 
+    //void addForecast();
+
     //void updateWeather(Integer id, Weather weather);
 
     //void deleteWeather(Integer id);

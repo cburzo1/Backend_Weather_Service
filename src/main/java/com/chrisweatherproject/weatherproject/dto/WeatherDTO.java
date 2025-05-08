@@ -25,7 +25,8 @@ public class WeatherDTO {
     @JsonProperty("weather")
     private List<Weather> weather;
 
-        // getters, setters
+    // getters, setters
+
 
     @Data
     @NoArgsConstructor
@@ -33,6 +34,13 @@ public class WeatherDTO {
     public static class Main {
         @JsonProperty("temp")
         private double temp;
+        public double getTemp() {
+            return temp;
+        }
+
+        public void setTemp(double temp) {
+            this.temp = temp;
+        }
     }
 
     @Data
@@ -41,6 +49,46 @@ public class WeatherDTO {
     public static class Weather {
         @JsonProperty("description")
         private String description;
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Main getMain() {
+        return main;
+    }
+
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+    public List<Weather> getWeather() {
+        return weather;
+    }
+
+    public void setWeather(List<Weather> weather) {
+        this.weather = weather;
     }
 
     /*public String getCity_name() {
