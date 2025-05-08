@@ -17,10 +17,10 @@ public class WeatherController {
     private WeatherService weatherService;
 
     @PostMapping("/add")
-    public String addWeather(@RequestBody Weather weather){
-        weatherService.addWeather(weather);
+    public String addWeather(/*@RequestBody WeatherDTO weatherDTO*/){
+        weatherService.addWeather(/*weatherDTO*/);
 
-        System.out.println(weather);
+        //System.out.println(weatherDTO);
 
         return "success add weather";
     }
@@ -35,7 +35,7 @@ public class WeatherController {
         return weatherService.getWeather(id);
     }
 
-    //What is a Response Enitity?
+    /*
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateWeather(@PathVariable Integer id, @RequestBody Weather weather){
         weatherService.updateWeather(id, weather);
@@ -56,4 +56,9 @@ public class WeatherController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/dp")
+    public void getWeatherData(){
+        return weatherService.getWeatherData();
+    }*/
 }
