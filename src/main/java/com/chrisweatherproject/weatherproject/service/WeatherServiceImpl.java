@@ -5,6 +5,7 @@ import com.chrisweatherproject.weatherproject.model.Weather;
 import com.chrisweatherproject.weatherproject.repository.WeatherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,19 +33,9 @@ public class WeatherServiceImpl implements WeatherService{
         return weather;
     }
 
-    /*public void getWeatherData(String city) {
-        String url = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
-
-        System.out.println("HELLOOOOO????!!!");
-        System.out.println(restTemplate.getForObject(url, WeatherService.class));
-
-        return (List<Weather>) restTemplate.getForObject(url, WeatherService.class);
-    }*/
-
     @Override
-    public void addWeather(/*WeatherDTO weatherDTO*/){
-        //System.out.println("HELLO?");
-        //weatherRepository.save(weather);
+    @Scheduled(fixedRate = 600000)
+    public void addWeather(){
         String urlNY = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
         String urlMi = "https://api.openweathermap.org/data/2.5/weather?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
         String urlPh = "https://api.openweathermap.org/data/2.5/weather?q=" + "Phoenix" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
@@ -72,40 +63,6 @@ public class WeatherServiceImpl implements WeatherService{
 
         String url = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
 
-        //System.out.println("HELLOOOOO????!!!");
-        //System.out.println(restTemplate.getForObject(url, String.class));
-
         return weather;
     }
-
-    /*@Override
-    public void updateWeather(Integer id, Weather weather){
-        //check if the object of the given id is in the database
-        weatherRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid weather id" + id));
-
-        weather.setId(id);
-        weatherRepository.save(weather);
-    }
-
-    @Override
-    public void deleteWeather(Integer id){
-        Weather weather = weatherRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid weather id" + id));
-
-        weatherRepository.delete(weather);
-    }
-
-    @Override
-    public void updateCityName(Integer id, WeatherDTO weatherDTO){
-        Weather weather = weatherRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid weather id" + id));
-
-        weather.setCity_name(weatherDTO.getCity_name());
-
-        weatherRepository.save(weather);
-    }*/
 }

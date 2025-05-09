@@ -1,12 +1,11 @@
 package com.chrisweatherproject.weatherproject.service;
 
 import com.chrisweatherproject.weatherproject.dto.ForecastResponseDTO;
-import com.chrisweatherproject.weatherproject.dto.WeatherDTO;
 import com.chrisweatherproject.weatherproject.model.Forecast;
-import com.chrisweatherproject.weatherproject.model.Weather;
 import com.chrisweatherproject.weatherproject.repository.ForecastRepository;
 import com.chrisweatherproject.weatherproject.repository.WeatherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.chrisweatherproject.weatherproject.dto.ForecastDTO;
@@ -54,7 +53,6 @@ public class ForecastServiceImpl implements ForecastService{
         forecast.setVisibility(dto.getVisibility());
         forecast.setPop(dto.getPop());
 
-        // Parsing forecastTime string (e.g., "2025-05-08 12:00:00") into LocalDateTime
         if (dto.getForecastTime() != null && !dto.getForecastTime().isBlank()) {
             try {
                 forecast.setForecastTime(LocalDateTime.parse(
@@ -71,8 +69,8 @@ public class ForecastServiceImpl implements ForecastService{
     }
 
     @Override
+    @Scheduled(fixedRate = 600000)
     public void addForecast(){
-        //System.out.println("HELLO?");
         String urlNY = "https://api.openweathermap.org/data/2.5/forecast?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
         String urlMi = "https://api.openweathermap.org/data/2.5/forecast?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
         String urlPh = "https://api.openweathermap.org/data/2.5/forecast?q=" + "Phoenix" + "&appid=f22099277e7c5b092f838a7218ea4c6e";

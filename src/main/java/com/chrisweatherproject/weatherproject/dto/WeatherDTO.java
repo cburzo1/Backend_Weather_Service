@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WeatherDTO {
-    //private String city_name;
 
     @JsonProperty("name")
     private String cityName;
@@ -24,8 +23,6 @@ public class WeatherDTO {
 
     @JsonProperty("weather")
     private List<Weather> weather;
-
-    // getters, setters
 
 
     @Data
@@ -90,13 +87,5 @@ public class WeatherDTO {
     public void setWeather(List<Weather> weather) {
         this.weather = weather;
     }
-
-    /*public String getCity_name() {
-        return city_name;
-    }
-
-    public void setCity_name(String city_name) {
-        this.city_name = city_name;
-    }*/
 
 }
