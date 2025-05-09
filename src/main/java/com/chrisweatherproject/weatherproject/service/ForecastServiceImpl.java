@@ -1,5 +1,6 @@
 package com.chrisweatherproject.weatherproject.service;
 
+import com.chrisweatherproject.weatherproject.dto.ForecastResponseDTO;
 import com.chrisweatherproject.weatherproject.dto.WeatherDTO;
 import com.chrisweatherproject.weatherproject.model.Forecast;
 import com.chrisweatherproject.weatherproject.model.Weather;
@@ -28,8 +29,10 @@ public class ForecastServiceImpl implements ForecastService{
         this.restTemplate = restTemplate;
     }
 
-    public Forecast mapToEntity(ForecastDTO dto) {
+    public Forecast mapToEntity(ForecastDTO dto, String cityName) {
         Forecast forecast = new Forecast();
+
+        forecast.setCityName(cityName);
 
         if (dto.getMain() != null) {
             forecast.setTemperature(dto.getMain().getTemp());
@@ -69,11 +72,27 @@ public class ForecastServiceImpl implements ForecastService{
 
     @Override
     public void addForecast(){
-        System.out.println("HELLO?");
-        String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
+        //System.out.println("HELLO?");
+        String urlNY = "https://api.openweathermap.org/data/2.5/forecast?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlMi = "https://api.openweathermap.org/data/2.5/forecast?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlPh = "https://api.openweathermap.org/data/2.5/forecast?q=" + "Phoenix" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
 
-        ForecastDTO forecastDTO = restTemplate.getForObject(url, ForecastDTO.class);
 
-        forecastRepository.save(mapToEntity(forecastDTO));
+        ForecastResponseDTO forecastresponseDTO_NY = restTemplate.getForObject(urlNY, ForecastResponseDTO.class);
+        ForecastResponseDTO forecastresponseDTO_Mi = restTemplate.getForObject(urlMi, ForecastResponseDTO.class);
+        ForecastResponseDTO forecastresponseDTO_Ph = restTemplate.getForObject(urlPh, ForecastResponseDTO.class);
+
+
+        for (ForecastDTO dto : forecastresponseDTO_NY.getList()) {
+            forecastRepository.save(mapToEntity(dto, "New York City"));
+        }
+
+        for (ForecastDTO dto : forecastresponseDTO_Mi.getList()) {
+            forecastRepository.save(mapToEntity(dto, "Miami"));
+        }
+
+        for (ForecastDTO dto : forecastresponseDTO_Ph.getList()) {
+            forecastRepository.save(mapToEntity(dto, "Phoenix"));
+        }
     }
 }

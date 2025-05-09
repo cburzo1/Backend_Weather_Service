@@ -20,6 +20,16 @@ public class Forecast {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    private String cityName;
+
     private double temperature;
     private double feelsLike;
     private int humidity;

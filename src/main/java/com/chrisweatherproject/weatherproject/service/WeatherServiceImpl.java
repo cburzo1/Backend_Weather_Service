@@ -43,13 +43,20 @@ public class WeatherServiceImpl implements WeatherService{
 
     @Override
     public void addWeather(/*WeatherDTO weatherDTO*/){
-        System.out.println("HELLO?");
+        //System.out.println("HELLO?");
         //weatherRepository.save(weather);
-        String url = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlNY = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlMi = "https://api.openweathermap.org/data/2.5/weather?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlPh = "https://api.openweathermap.org/data/2.5/weather?q=" + "Phoenix" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
 
-        WeatherDTO weatherDTO = restTemplate.getForObject(url, WeatherDTO.class);
 
-        weatherRepository.save(mapToEntity(weatherDTO));
+        WeatherDTO weatherDTO_NY = restTemplate.getForObject(urlNY, WeatherDTO.class);
+        WeatherDTO weatherDTO_MI = restTemplate.getForObject(urlMi, WeatherDTO.class);
+        WeatherDTO weatherDTO_PH = restTemplate.getForObject(urlPh, WeatherDTO.class);
+
+        weatherRepository.save(mapToEntity(weatherDTO_NY));
+        weatherRepository.save(mapToEntity(weatherDTO_MI));
+        weatherRepository.save(mapToEntity(weatherDTO_PH));
     }
 
     @Override
@@ -65,8 +72,8 @@ public class WeatherServiceImpl implements WeatherService{
 
         String url = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
 
-        System.out.println("HELLOOOOO????!!!");
-        System.out.println(restTemplate.getForObject(url, String.class));
+        //System.out.println("HELLOOOOO????!!!");
+        //System.out.println(restTemplate.getForObject(url, String.class));
 
         return weather;
     }
