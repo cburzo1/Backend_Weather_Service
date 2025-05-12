@@ -24,17 +24,35 @@ public class WeatherServiceImpl implements WeatherService{
         this.restTemplate = restTemplate;
     }
 
-    public Weather mapToEntity(WeatherDTO dto) {
+    /*public Weather mapToEntity(WeatherDTO dto) {
         Weather weather = new Weather();
         weather.setCityName(dto.getCityName());
         weather.setDescription(dto.getWeather().get(0).getDescription());
         weather.setTemperature(dto.getMain().getTemp());
         weather.setTimestamp(LocalDateTime.now());
         return weather;
+    }*/
+
+    public Weather mapToEntity(WeatherDTO dto) {
+        Weather weather = new Weather();
+
+        weather.setCityName(dto.getCityName());
+
+        if (dto.getWeather() != null && !dto.getWeather().isEmpty()) {
+            weather.setDescription(dto.getWeather().get(0).getDescription());
+        }
+
+        if (dto.getMain() != null) {
+            weather.setTemperature(dto.getMain().getTemp());
+        }
+
+        weather.setTimestamp(LocalDateTime.now());
+
+        return weather;
     }
 
     @Override
-    //@Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = 600000)
     public void addWeather(){
         String urlNY = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
         String urlMi = "https://api.openweathermap.org/data/2.5/weather?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
