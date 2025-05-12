@@ -15,12 +15,12 @@ import java.util.List;
 
 @Service
 public class WeatherServiceImpl implements WeatherService{
-    @Autowired
-    private WeatherRepository weatherRepository;
 
+    private final WeatherRepository weatherRepository;
     private final RestTemplate restTemplate;
 
-    public WeatherServiceImpl(RestTemplate restTemplate) {
+    public WeatherServiceImpl(WeatherRepository weatherRepository, RestTemplate restTemplate) {
+        this.weatherRepository = weatherRepository;
         this.restTemplate = restTemplate;
     }
 

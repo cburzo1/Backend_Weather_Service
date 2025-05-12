@@ -16,7 +16,7 @@ import java.time.format.DateTimeParseException;
 
 @Service
 public class ForecastServiceImpl implements ForecastService{
-    @Autowired
+    /*@Autowired
     private ForecastRepository forecastRepository;
 
     @Autowired
@@ -25,6 +25,16 @@ public class ForecastServiceImpl implements ForecastService{
     private final RestTemplate restTemplate;
 
     public ForecastServiceImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }*/
+    //@Autowired
+    //private WeatherRepository weatherRepository;
+
+    private final ForecastRepository forecastRepository;
+    private final RestTemplate restTemplate;
+
+    public ForecastServiceImpl(ForecastRepository forecastRepository, RestTemplate restTemplate) {
+        this.forecastRepository = forecastRepository;
         this.restTemplate = restTemplate;
     }
 
@@ -69,7 +79,7 @@ public class ForecastServiceImpl implements ForecastService{
     }
 
     @Override
-    @Scheduled(fixedRate = 600000)
+    //@Scheduled(fixedRate = 600000)
     public void addForecast(){
         String urlNY = "https://api.openweathermap.org/data/2.5/forecast?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
         String urlMi = "https://api.openweathermap.org/data/2.5/forecast?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
@@ -81,16 +91,22 @@ public class ForecastServiceImpl implements ForecastService{
         ForecastResponseDTO forecastresponseDTO_Ph = restTemplate.getForObject(urlPh, ForecastResponseDTO.class);
 
 
-        for (ForecastDTO dto : forecastresponseDTO_NY.getList()) {
-            forecastRepository.save(mapToEntity(dto, "New York City"));
+        if (forecastresponseDTO_NY != null && forecastresponseDTO_NY.getList() != null) {
+            for (ForecastDTO dto : forecastresponseDTO_NY.getList()) {
+                forecastRepository.save(mapToEntity(dto, "New York City"));
+            }
         }
 
-        for (ForecastDTO dto : forecastresponseDTO_Mi.getList()) {
-            forecastRepository.save(mapToEntity(dto, "Miami"));
+        if (forecastresponseDTO_Mi != null && forecastresponseDTO_Mi.getList() != null) {
+            for (ForecastDTO dto : forecastresponseDTO_Mi.getList()) {
+                forecastRepository.save(mapToEntity(dto, "Miami"));
+            }
         }
 
-        for (ForecastDTO dto : forecastresponseDTO_Ph.getList()) {
-            forecastRepository.save(mapToEntity(dto, "Phoenix"));
+        if (forecastresponseDTO_Ph != null && forecastresponseDTO_Ph.getList() != null) {
+            for (ForecastDTO dto : forecastresponseDTO_Ph.getList()) {
+                forecastRepository.save(mapToEntity(dto, "Phoenix"));
+            }
         }
     }
 }

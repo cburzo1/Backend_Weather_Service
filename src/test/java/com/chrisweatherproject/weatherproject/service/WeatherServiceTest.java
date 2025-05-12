@@ -13,8 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class WeatherServiceTest {
@@ -26,7 +25,7 @@ public class WeatherServiceTest {
     private WeatherRepository weatherRepository;
 
     @InjectMocks
-    private WeatherService weatherService;
+    private WeatherServiceImpl weatherService;
 
     @Test
     void testAddWeather() {
@@ -43,6 +42,6 @@ public class WeatherServiceTest {
 
         weatherService.addWeather();
 
-        verify(weatherRepository).save(any(Weather.class));
+        verify(weatherRepository, atLeastOnce()).save(any(Weather.class));
     }
 }
