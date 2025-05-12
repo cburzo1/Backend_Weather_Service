@@ -34,7 +34,7 @@ public class WeatherServiceImpl implements WeatherService{
     }
 
     @Override
-    @Scheduled(fixedRate = 600000)
+    //@Scheduled(fixedRate = 600000)
     public void addWeather(){
         String urlNY = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
         String urlMi = "https://api.openweathermap.org/data/2.5/weather?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
