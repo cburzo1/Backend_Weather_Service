@@ -7,6 +7,7 @@ import com.chrisweatherproject.weatherproject.repository.WeatherRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -28,6 +29,9 @@ public class ForecastServiceImpl implements ForecastService{
         this.forecastRepository = forecastRepository;
         this.restTemplate = restTemplate;
     }
+
+    @Value("${openweathermap.api.key}")
+    private String apiKey;
 
     private static final Logger logger = LoggerFactory.getLogger(ForecastService.class);
 
@@ -94,9 +98,9 @@ public class ForecastServiceImpl implements ForecastService{
     public void addForecast() {
         logger.info("Starting forecast fetch and save process.");
 
-        String urlNY = "https://api.openweathermap.org/data/2.5/forecast?q=New York City&appid=f22099277e7c5b092f838a7218ea4c6e";
-        String urlMi = "https://api.openweathermap.org/data/2.5/forecast?q=Miami&appid=f22099277e7c5b092f838a7218ea4c6e";
-        String urlPh = "https://api.openweathermap.org/data/2.5/forecast?q=Phoenix&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlNY = "https://api.openweathermap.org/data/2.5/forecast?q=New York City&appid=" + apiKey;
+        String urlMi = "https://api.openweathermap.org/data/2.5/forecast?q=Miami&appid="+ apiKey;
+        String urlPh = "https://api.openweathermap.org/data/2.5/forecast?q=Phoenix&appid="+ apiKey;
 
         try {
             ForecastResponseDTO forecastresponseDTO_NY = restTemplate.getForObject(urlNY, ForecastResponseDTO.class);

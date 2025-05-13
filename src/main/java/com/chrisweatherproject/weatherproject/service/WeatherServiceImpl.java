@@ -6,6 +6,7 @@ import com.chrisweatherproject.weatherproject.repository.WeatherRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class WeatherServiceImpl implements WeatherService{
         this.weatherRepository = weatherRepository;
         this.restTemplate = restTemplate;
     }
+
+    @Value("${openweathermap.api.key}")
+    private String apiKey;
 
     // This method maps my DTO from an external API to my own database
     public Weather mapToEntity(WeatherDTO dto) {
@@ -67,9 +71,9 @@ public class WeatherServiceImpl implements WeatherService{
     public void addWeather() {
         logger.info("Starting to fetch and store current weather data for predefined cities.");
 
-        String urlNY = "https://api.openweathermap.org/data/2.5/weather?q=New York City&appid=f22099277e7c5b092f838a7218ea4c6e";
-        String urlMi = "https://api.openweathermap.org/data/2.5/weather?q=Miami&appid=f22099277e7c5b092f838a7218ea4c6e";
-        String urlPh = "https://api.openweathermap.org/data/2.5/weather?q=Phoenix&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlNY = "https://api.openweathermap.org/data/2.5/weather?q=New York City&appid=" + apiKey;
+        String urlMi = "https://api.openweathermap.org/data/2.5/weather?q=Miami&appid="+ apiKey;
+        String urlPh = "https://api.openweathermap.org/data/2.5/weather?q=Phoenix&appid="+ apiKey;
 
         try {
             logger.debug("Fetching weather data for New York City.");
