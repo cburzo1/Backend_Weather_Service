@@ -11,6 +11,7 @@ public class ForecastController {
     @Autowired
     private ForecastService forecastService;
 
+    //Provides access via .../forecast/add
     @PostMapping("/add")
     public String addForecast(){
         forecastService.addForecast();

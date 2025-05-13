@@ -14,21 +14,11 @@ public class WeatherController {
     @Autowired
     private WeatherService weatherService;
 
+    //Provides access via .../weather/add
     @PostMapping("/add")
     public String addWeather(){
         weatherService.addWeather();
 
         return "success add weather";
     }
-
-    @GetMapping
-    public List<Weather> getWeather(){
-        return weatherService.getWeather();
-    }
-
-    @GetMapping("/get")
-    public Weather getWeather(@RequestParam Integer id){
-        return weatherService.getWeather(id);
-    }
-
 }

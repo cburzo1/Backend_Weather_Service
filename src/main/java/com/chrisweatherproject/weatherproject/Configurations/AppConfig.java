@@ -7,6 +7,8 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class AppConfig {
 
+    //Enables All external APIs like Open Weather
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

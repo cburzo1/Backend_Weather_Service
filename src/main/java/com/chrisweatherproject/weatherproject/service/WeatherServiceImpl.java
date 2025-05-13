@@ -3,6 +3,8 @@ package com.chrisweatherproject.weatherproject.service;
 import com.chrisweatherproject.weatherproject.dto.WeatherDTO;
 import com.chrisweatherproject.weatherproject.model.Weather;
 import com.chrisweatherproject.weatherproject.repository.WeatherRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,74 +15,89 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+//This class implements the established services
 @Service
 public class WeatherServiceImpl implements WeatherService{
 
+    //Instantiations
     private final WeatherRepository weatherRepository;
     private final RestTemplate restTemplate;
+
+    private static final Logger logger = LoggerFactory.getLogger(ForecastService.class);
 
     public WeatherServiceImpl(WeatherRepository weatherRepository, RestTemplate restTemplate) {
         this.weatherRepository = weatherRepository;
         this.restTemplate = restTemplate;
     }
 
-    /*public Weather mapToEntity(WeatherDTO dto) {
-        Weather weather = new Weather();
-        weather.setCityName(dto.getCityName());
-        weather.setDescription(dto.getWeather().get(0).getDescription());
-        weather.setTemperature(dto.getMain().getTemp());
-        weather.setTimestamp(LocalDateTime.now());
-        return weather;
-    }*/
-
+    // This method maps my DTO from an external API to my own database
     public Weather mapToEntity(WeatherDTO dto) {
         Weather weather = new Weather();
+        logger.info("Mapping weather data for city: {}", dto.getCityName());
 
         weather.setCityName(dto.getCityName());
+        logger.debug("Set city name: {}", dto.getCityName());
 
         if (dto.getWeather() != null && !dto.getWeather().isEmpty()) {
-            weather.setDescription(dto.getWeather().get(0).getDescription());
+            String description = dto.getWeather().get(0).getDescription();
+            weather.setDescription(description);
+            logger.debug("Mapped weather description: {}", description);
+        } else {
+            logger.warn("Weather description data is missing.");
         }
 
         if (dto.getMain() != null) {
-            weather.setTemperature(dto.getMain().getTemp());
+            double temp = dto.getMain().getTemp();
+            weather.setTemperature(temp);
+            logger.debug("Mapped temperature: {}", temp);
+        } else {
+            logger.warn("Main temperature data is null.");
         }
 
-        weather.setTimestamp(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        weather.setTimestamp(now);
+        logger.debug("Set timestamp: {}", now);
 
         return weather;
     }
 
+    //This method sets and saves the forecast data for 3 cities every 10 minutes
     @Override
     @Scheduled(fixedRate = 600000)
-    public void addWeather(){
-        String urlNY = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
-        String urlMi = "https://api.openweathermap.org/data/2.5/weather?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
-        String urlPh = "https://api.openweathermap.org/data/2.5/weather?q=" + "Phoenix" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
+    public void addWeather() {
+        logger.info("Starting to fetch and store current weather data for predefined cities.");
 
+        String urlNY = "https://api.openweathermap.org/data/2.5/weather?q=New York City&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlMi = "https://api.openweathermap.org/data/2.5/weather?q=Miami&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlPh = "https://api.openweathermap.org/data/2.5/weather?q=Phoenix&appid=f22099277e7c5b092f838a7218ea4c6e";
 
-        WeatherDTO weatherDTO_NY = restTemplate.getForObject(urlNY, WeatherDTO.class);
-        WeatherDTO weatherDTO_MI = restTemplate.getForObject(urlMi, WeatherDTO.class);
-        WeatherDTO weatherDTO_PH = restTemplate.getForObject(urlPh, WeatherDTO.class);
+        try {
+            logger.debug("Fetching weather data for New York City.");
+            WeatherDTO weatherDTO_NY = restTemplate.getForObject(urlNY, WeatherDTO.class);
+            weatherRepository.save(mapToEntity(weatherDTO_NY));
+            logger.info("Saved weather data for New York City.");
+        } catch (Exception e) {
+            logger.error("Failed to fetch or save weather data for New York City.", e);
+        }
 
-        weatherRepository.save(mapToEntity(weatherDTO_NY));
-        weatherRepository.save(mapToEntity(weatherDTO_MI));
-        weatherRepository.save(mapToEntity(weatherDTO_PH));
-    }
+        try {
+            logger.debug("Fetching weather data for Miami.");
+            WeatherDTO weatherDTO_MI = restTemplate.getForObject(urlMi, WeatherDTO.class);
+            weatherRepository.save(mapToEntity(weatherDTO_MI));
+            logger.info("Saved weather data for Miami.");
+        } catch (Exception e) {
+            logger.error("Failed to fetch or save weather data for Miami.", e);
+        }
 
-    @Override
-    public List<Weather> getWeather(){
-        return weatherRepository.findAll();
-    }
+        try {
+            logger.debug("Fetching weather data for Phoenix.");
+            WeatherDTO weatherDTO_PH = restTemplate.getForObject(urlPh, WeatherDTO.class);
+            weatherRepository.save(mapToEntity(weatherDTO_PH));
+            logger.info("Saved weather data for Phoenix.");
+        } catch (Exception e) {
+            logger.error("Failed to fetch or save weather data for Phoenix.", e);
+        }
 
-    @Override
-    public Weather getWeather(Integer id){
-        Weather weather = weatherRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid weather id" + id));
-
-        String url = "https://api.openweathermap.org/data/2.5/weather?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
-
-        return weather;
+        logger.info("Finished fetching and storing weather data.");
     }
 }

@@ -1,13 +1,7 @@
 package com.chrisweatherproject.weatherproject.service;
 
-import com.chrisweatherproject.weatherproject.model.Weather;
-
-import java.util.List;
-
+//This interface will help me call addWeather and other methods as I create them in
+// the controller
 public interface WeatherService {
     void addWeather();
-
-    List<Weather> getWeather();
-
-    Weather getWeather(Integer id);
 }

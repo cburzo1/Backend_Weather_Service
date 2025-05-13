@@ -24,7 +24,8 @@ public class WeatherDTO {
     @JsonProperty("weather")
     private List<Weather> weather;
 
-
+    //DTO builds the structure for data transfer to external APIs and clients
+    // They are like models and have appropriate attributes, setters, and getters
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

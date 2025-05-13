@@ -9,6 +9,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
+
+//Models are the structure of your own database
+//*** I added lombok but also setters and getters. Its redundant but I test both of them
+//on different computers. If needed I can remove the lombok annotations
 @Data
 @Entity
 @NoArgsConstructor

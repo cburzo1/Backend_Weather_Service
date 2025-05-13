@@ -16,9 +16,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+//This class implements the established services
 @Service
 public class ForecastServiceImpl implements ForecastService{
 
+    //Instantiations
     private final ForecastRepository forecastRepository;
     private final RestTemplate restTemplate;
 
@@ -29,55 +31,14 @@ public class ForecastServiceImpl implements ForecastService{
 
     private static final Logger logger = LoggerFactory.getLogger(ForecastService.class);
 
-    /*public Forecast mapToEntity(ForecastDTO dto, String cityName) {
-        Forecast forecast = new Forecast();
-
-        forecast.setCityName(cityName);
-
-        if (dto.getMain() != null) {
-            forecast.setTemperature(dto.getMain().getTemp());
-            forecast.setFeelsLike(dto.getMain().getFeelsLike());
-            forecast.setHumidity(dto.getMain().getHumidity());
-            forecast.setPressure(dto.getMain().getPressure());
-        }
-
-        if (dto.getWeather() != null && !dto.getWeather().isEmpty()) {
-            forecast.setDescription(dto.getWeather().get(0).getDescription());
-            forecast.setIcon(dto.getWeather().get(0).getIcon());
-        }
-
-        if (dto.getWind() != null) {
-            forecast.setWindSpeed(dto.getWind().getSpeed());
-            forecast.setWindDegree(dto.getWind().getDeg());
-        }
-
-        forecast.setVisibility(dto.getVisibility());
-        forecast.setPop(dto.getPop());
-
-        if (dto.getForecastTime() != null && !dto.getForecastTime().isBlank()) {
-            try {
-                forecast.setForecastTime(LocalDateTime.parse(
-                        dto.getForecastTime(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                ));
-            } catch (DateTimeParseException e) {
-                System.err.println("Could not parse forecast time: " + dto.getForecastTime());
-                e.printStackTrace();
-            }
-        }
-
-        return forecast;
-    }*/
-
+    // This method maps my DTO from an external API to my own database
     public Forecast mapToEntity(ForecastDTO dto, String cityName) {
         Forecast forecast = new Forecast();
         logger.info("Mapping forecast for city: {}", cityName);
 
-        // Set city name and log the step
         forecast.setCityName(cityName);
         logger.debug("Set city name: {}", cityName);
 
-        // Log when weather main data is being mapped
         if (dto.getMain() != null) {
             forecast.setTemperature(dto.getMain().getTemp());
             forecast.setFeelsLike(dto.getMain().getFeelsLike());
@@ -89,7 +50,6 @@ public class ForecastServiceImpl implements ForecastService{
             logger.warn("Main weather data is null.");
         }
 
-        // Log when weather data is being mapped
         if (dto.getWeather() != null && !dto.getWeather().isEmpty()) {
             forecast.setDescription(dto.getWeather().get(0).getDescription());
             forecast.setIcon(dto.getWeather().get(0).getIcon());
@@ -99,7 +59,6 @@ public class ForecastServiceImpl implements ForecastService{
             logger.warn("Weather data is empty or null.");
         }
 
-        // Log when wind data is being mapped
         if (dto.getWind() != null) {
             forecast.setWindSpeed(dto.getWind().getSpeed());
             forecast.setWindDegree(dto.getWind().getDeg());
@@ -108,12 +67,10 @@ public class ForecastServiceImpl implements ForecastService{
             logger.warn("Wind data is null.");
         }
 
-        // Set and log visibility and pop
         forecast.setVisibility(dto.getVisibility());
         forecast.setPop(dto.getPop());
         logger.debug("Mapped visibility = {}, pop = {}", forecast.getVisibility(), forecast.getPop());
 
-        // Log and handle the forecast time mapping
         if (dto.getForecastTime() != null && !dto.getForecastTime().isBlank()) {
             try {
                 forecast.setForecastTime(LocalDateTime.parse(
@@ -131,35 +88,44 @@ public class ForecastServiceImpl implements ForecastService{
         return forecast;
     }
 
+    //This method sets and saves the forecast data for 3 cities every 10 minutes
     @Override
     @Scheduled(fixedRate = 600000)
-    public void addForecast(){
-        String urlNY = "https://api.openweathermap.org/data/2.5/forecast?q=" + "New York City" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
-        String urlMi = "https://api.openweathermap.org/data/2.5/forecast?q=" + "Miami" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
-        String urlPh = "https://api.openweathermap.org/data/2.5/forecast?q=" + "Phoenix" + "&appid=f22099277e7c5b092f838a7218ea4c6e";
+    public void addForecast() {
+        logger.info("Starting forecast fetch and save process.");
 
+        String urlNY = "https://api.openweathermap.org/data/2.5/forecast?q=New York City&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlMi = "https://api.openweathermap.org/data/2.5/forecast?q=Miami&appid=f22099277e7c5b092f838a7218ea4c6e";
+        String urlPh = "https://api.openweathermap.org/data/2.5/forecast?q=Phoenix&appid=f22099277e7c5b092f838a7218ea4c6e";
 
-        ForecastResponseDTO forecastresponseDTO_NY = restTemplate.getForObject(urlNY, ForecastResponseDTO.class);
-        ForecastResponseDTO forecastresponseDTO_Mi = restTemplate.getForObject(urlMi, ForecastResponseDTO.class);
-        ForecastResponseDTO forecastresponseDTO_Ph = restTemplate.getForObject(urlPh, ForecastResponseDTO.class);
+        try {
+            ForecastResponseDTO forecastresponseDTO_NY = restTemplate.getForObject(urlNY, ForecastResponseDTO.class);
+            processForecastResponse(forecastresponseDTO_NY, "New York City");
 
+            ForecastResponseDTO forecastresponseDTO_Mi = restTemplate.getForObject(urlMi, ForecastResponseDTO.class);
+            processForecastResponse(forecastresponseDTO_Mi, "Miami");
 
-        if (forecastresponseDTO_NY != null && forecastresponseDTO_NY.getList() != null) {
-            for (ForecastDTO dto : forecastresponseDTO_NY.getList()) {
-                forecastRepository.save(mapToEntity(dto, "New York City"));
-            }
+            ForecastResponseDTO forecastresponseDTO_Ph = restTemplate.getForObject(urlPh, ForecastResponseDTO.class);
+            processForecastResponse(forecastresponseDTO_Ph, "Phoenix");
+
+            logger.info("Finished forecast fetch and save process.");
+        } catch (Exception e) {
+            logger.error("Exception occurred while fetching or saving forecast data.", e);
         }
+    }
 
-        if (forecastresponseDTO_Mi != null && forecastresponseDTO_Mi.getList() != null) {
-            for (ForecastDTO dto : forecastresponseDTO_Mi.getList()) {
-                forecastRepository.save(mapToEntity(dto, "Miami"));
+    //List wrapper, as all forecasts are lists at their root, I need to iterate through each forecast for each day
+    // of the 5 days
+    private void processForecastResponse(ForecastResponseDTO response, String cityName) {
+        if (response != null && response.getList() != null) {
+            logger.info("Received forecast data for {}", cityName);
+            for (ForecastDTO dto : response.getList()) {
+                Forecast forecast = mapToEntity(dto, cityName);
+                forecastRepository.save(forecast);
+                logger.debug("Saved forecast record for city: {}", cityName);
             }
-        }
-
-        if (forecastresponseDTO_Ph != null && forecastresponseDTO_Ph.getList() != null) {
-            for (ForecastDTO dto : forecastresponseDTO_Ph.getList()) {
-                forecastRepository.save(mapToEntity(dto, "Phoenix"));
-            }
+        } else {
+            logger.warn("No forecast data received for {}", cityName);
         }
     }
 }
